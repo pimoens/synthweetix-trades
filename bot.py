@@ -142,7 +142,8 @@ class SynthweetixBot:
             query shorts {{
                 shorts (
                         where: {{ 
-                            isOpen: true
+                            isOpen: true,
+                            createdAt_gte: {self.timestamp_last_fetch}
                         }}, orderBy: createdAt, orderDirection: asc) 
                 {{
                     id
