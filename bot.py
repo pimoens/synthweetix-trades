@@ -181,12 +181,12 @@ class SynthweetixBot:
         logging.info('Running SynthweetixBot')
 
         try:
-            # # Trades
-            # logging.info(f'Fetching trades from TheGraph at {self.gql_client_synthetix.transport}')
-            # whales = [trade for trade in self.fetch_trades() if float(trade.get('toAmountInUSD')) / 1e18 >= threshold]
-            #
-            # logging.info('Sending tweets for trades')
-            # self.create_trades_tweets(whales)
+            # Trades
+            logging.info(f'Fetching trades from TheGraph at {self.gql_client_synthetix.transport}')
+            whales = [trade for trade in self.fetch_trades() if float(trade.get('toAmountInUSD')) / 1e18 >= threshold]
+
+            logging.info('Sending tweets for trades')
+            self.create_trades_tweets(whales)
 
             # Cross-asset Swaps
             logging.info(f'Fetching cross-asset swaps from TheGraph at {self.gql_client_curve.transport}')
