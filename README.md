@@ -25,6 +25,11 @@ using the [gql](https://pypi.org/project/gql/). The query details can be found i
 For Cross-asset Swaps on Curve, the data is collected from TheGraph API ([Blocklytics Curve subgraph](https://thegraph.com/explorer/subgraph/blocklytics/curve)).
 The prices are converted to USD using [cryptocompare](https://pypi.org/project/cryptocompare/).
 
+#### Short positions
+
+For the Short positions, the data is collected from TheGraph API ([Synthethix Shorts subgraph](https://api.thegraph.com/subgraphs/name/synthetixio-team/synthetix-shorts)).
+The prices are converted to USD using [cryptocompare](https://pypi.org/project/cryptocompare/) and [pycoingecko](https://github.com/man-c/pycoingecko) for sETH and sBTC.
+
 ### Twitter bot
 
 I have opted to create a simple, well-structured Python solution using [tweepy](https://www.tweepy.org/). 
@@ -52,7 +57,8 @@ When the exchange value is larger than a set threshold (default is $100,000), a 
 | TWITTER_CONSUMER_SECRET   | Twitter Consumer Secret                                         | `''`            |
 | TWITTER_ACCESS_TOKEN      | Twitter OAuth Access Token                                      | `''`            |
 | TWITTER_ACCESS_SECRET     | Twitter OAuth Access Secret                                     | `''`            |
-| THRESHOLD                 | Threshold (in USD)                                              | `100000`        |
+| TRADE_VALUE_THRESHOLD     | Trade Value Threshold (in USD)                                  | `250000`        |
+| EYE_CATCHER_THRESHOLD     | Threshold (in USD) used to add additional eye catcher lines     | `1000000`       |
 
 ### Heroku
 

@@ -14,7 +14,8 @@ class BaseConfig:
     TWITTER_ACCESS_TOKEN = os.getenv('TWITTER_ACCESS_TOKEN', default='')
     TWITTER_ACCESS_SECRET = os.getenv('TWITTER_ACCESS_SECRET', default='')
 
-    THRESHOLD = os.getenv('TRADE_VALUE_THRESHOLD', 100000)
+    TRADE_VALUE_THRESHOLD = os.getenv('TRADE_VALUE_THRESHOLD', default=250000)
+    EYE_CATCHER_THRESHOLD = os.getenv('EYECATCHER_VALUE_THRESHOLD', default=1000000)
 
 
 class DevelopmentConfig(BaseConfig):
