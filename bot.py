@@ -55,7 +55,7 @@ class SynthweetixBot:
         message = f'\U0001F4B0 #Synthetix High Roller {type_.value} \U0001F4B0\n' \
                   f'{message}'
 
-        logging.warning(message)
+        logging.info(message)
         if not self.debug:
             try:
                 self.api.update_status(message)
@@ -120,8 +120,6 @@ class SynthweetixBot:
 
     def create_trades_tweets(self, trades):
         for trade in trades:
-            print(trade)
-
             account = trade.get('account')
 
             from_ = trade.get('from')
@@ -151,8 +149,6 @@ class SynthweetixBot:
 
     def create_swaps_tweets(self, swaps):
         for swap in swaps:
-            print(swap)
-
             transaction = swap.get('transaction').get('hash')
 
             from_token = swap.get('fromToken').get('symbol')
