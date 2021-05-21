@@ -1,63 +1,35 @@
-# Synthweetix - Twitter Bot for Synthetix Statistics
+# Synthweetix - Twitter Bot for Synthetix High Roller Trades
 
-This project is a submission to the [Open DeFi Hackathon](https://gitcoin.co/issue/snxgrants/open-defi-hackathon/5/100025663#).
+This project is a submission to the [Open DeFi Hackathon](https://gitcoin.co/issue/snxgrants/open-defi-hackathon/4/100025662).
 
 ## Challenge description
 
-Build a Twitter Bot that tracks and reports on interesting Synthetix Stats:
+Build a Twitter bot that tweets when a Synthetix Protocol trade occurs over a certain value threshold.
 
-Exchange Volume
-- Trading Fees
-- Total Value Locked
-- Amount of SNX staked (% of total)
-
-Note: Reference the [Synthetix Stats](https://stats.synthetix.io/) page for more options/information.
+Extra features:
+- Include Cross-asset Swaps on Curve
+- Include large short positions
+- Insert your creative idea here!
 
 ## Solution
 
 ### Data collection
 
-Concerning data collection, I have opted not to scrape various APIs or the HTML pages.
-Instead I have contributed to the Synthetix Stats project and extended it with an API endpoint that exposes all the required statistics as a JSON payload.
-By doing this, the statistics can easily be consumed by not only this bot, but any future application that requires up-to-date statistics about Synthetix.
+Concerning data collection, all data is queried from TheGraph API ([Synthethix Exchanges subgraph](https://thegraph.com/explorer/subgraph/synthetixio-team/synthetix-exchanges))
+using the [gql](https://pypi.org/project/gql/). The query details can be found in the source code.
 
-More information on the changes can be found here at [https://github.com/pimoens/synthetixio-stats/tree/nextjs-api](https://github.com/pimoens/synthetixio-stats/tree/nextjs-api).
 
 ### Twitter bot
 
 I have opted to create a simple, well-structured Python solution using [tweepy](https://www.tweepy.org/). 
-The bot is up and running at [https://twitter.com/synthweetix](https://twitter.com/synthweetix).
+The bot is up and running at [https://twitter.com/synthweetix-trades](https://twitter.com/synthweetix). 
 
-4 types of statistics (as per Synthetix Stats) are included:
-- **Network statistics**
-  - Price of SNX in USD (Change over the last 24h)
-  - Market cap in USD
-  - Amount of SNX locked/staked (Percentage)
-  - Active C-Ratio
-  - Number of holders
-- **Staking statistics**
-  - SNX Staking APY
-  - SNX Staking APY (With rewards)
-  - Rewards pool
-  - Unclaimed fees and rewards
-  - Upcoming fees in next period
-  - Number of stakers
-- **Trading statistics**
-  - Trading volume
-  - Trading fees
-  - 24h exchange volume
-  - Number of trades
-  - Number of unique traders
-  - Average daily traders
-- **Yield Farming statistics**
-  - Lending APY
-  - Weekly rewards and APY for sUSD, sETH and sBTC
-  
-Each type of statistics is communicated by a single tweet every day at 13:00 UTC (easily configurable).
+It queries TheGraph every 5min (can be easily configured) to fetch all exchanges since the last pull.
+When the exchange value is larger than a set threshold (default is $100,000), a tweet is sent.
 
 **Preview**
 
-![preview](docs/example_network_tweet.png)
+![preview](docs/example_trades_tweet.png)
 
 
 ## Deployment
@@ -66,14 +38,15 @@ Each type of statistics is communicated by a single tweet every day at 13:00 UTC
 
 #### Environment variables
 
-| Name                      | Description                                                     | Default                                     |
-| :-------------:           | :-------------:                                                 | :-----:                                      |
-| CONFIGURATION             | Configuration to run (`development`, `production` or `cronjob`) | `development`                               |
-| TWITTER_CONSUMER_KEY      | Twitter Consumer Key                                            | `''`                                        |
-| TWITTER_CONSUMER_SECRET   | Twitter Consumer Secret                                         | `''`                                        |
-| TWITTER_ACCESS_TOKEN      | Twitter OAuth Access Token                                      | `''`                                        |
-| TWITTER_ACCESS_SECRET     | Twitter OAuth Access Secret                                     | `''`                                        |
-| SYNTHETIX_STATS_ENDPOINT  | API Endpoint of the Synthetix Stats application                 | `https://synthetix-stats.herokuapp.com/api` |
+| Name                      | Description                                                     | Default                                                                        |
+| :-------------:           | :-------------:                                                 | :-----:                                                                        |
+| CONFIGURATION             | Configuration to run (`development`, `production` or `cronjob`) | `development`                                                                  |
+| TWITTER_CONSUMER_KEY      | Twitter Consumer Key                                            | `''`                                                                           |
+| TWITTER_CONSUMER_SECRET   | Twitter Consumer Secret                                         | `''`                                                                           |
+| TWITTER_ACCESS_TOKEN      | Twitter OAuth Access Token                                      | `''`                                                                           |
+| TWITTER_ACCESS_SECRET     | Twitter OAuth Access Secret                                     | `''`                                                                           |
+| SUBGRAPH_API_ENDPOINT     | API Endpoint of the Synthetix Exchanges subgraph                | `https://api.thegraph.com/subgraphs/name/synthetixio-team/synthetix-exchanges` |
+| THRESHOLD                 | Threshold (in USD)                                              | `100000`                                                                       |
 
 ### Heroku
 

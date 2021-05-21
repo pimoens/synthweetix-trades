@@ -21,19 +21,19 @@ class BaseConfig:
 
 
 class DevelopmentConfig(BaseConfig):
-    LOG_LEVEL = logging.WARNING
+    LOG_LEVEL = logging.INFO
 
     TRIGGER = IntervalTrigger(minutes=5)
 
 
 class ProductionConfig(BaseConfig):
-    LOG_LEVEL = logging.INFO
+    LOG_LEVEL = logging.WARNING
 
     TRIGGER = IntervalTrigger(minutes=5)
 
 
 class CronJobConfig(ProductionConfig):
-    LOG_LEVEL = logging.INFO
+    LOG_LEVEL = logging.WARNING
 
     TRIGGER = None
 
