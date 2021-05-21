@@ -36,7 +36,8 @@ I have opted to create a simple, well-structured Python solution using [tweepy](
 The bot is up and running at [https://twitter.com/synthweetix-trades](https://twitter.com/synthweetix). 
 
 It queries TheGraph every 5min (can be easily configured) to fetch all exchanges since the last pull.
-When the exchange value is larger than a set threshold (default is $100,000), a tweet is sent.
+When the exchange value is larger than a set threshold (default is $250,000), a tweet is sent.
+An additional threshold is introduced to optionally send an eye catcher line with the tweet (default is $1,000,000).
 
 **Preview**
 
