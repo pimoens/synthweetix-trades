@@ -87,7 +87,6 @@ class SynthweetixBot:
             """
         )
         result = self.gql_client_synthetix.execute(query)
-        self.timestamp_last_fetch = int(time.time())
         return result.get('synthExchanges')
 
     def fetch_curve_swaps(self):
@@ -96,6 +95,7 @@ class SynthweetixBot:
             query swaps {{
                 swaps (
                         where: {{ 
+                            timestamp_gte: {self.timestamp_last_fetch}
                         }}, orderBy: timestamp, orderDirection: asc) 
                 {{
                     fromToken {{
@@ -116,7 +116,6 @@ class SynthweetixBot:
             """
         )
         result = self.gql_client_curve.execute(query)
-        self.timestamp_last_fetch = int(time.time())
         return result.get('swaps')
 
     def create_trades_tweets(self, trades):
@@ -211,7 +210,9 @@ class SynthweetixBot:
                     whales.append(swap)
 
             logging.info('Sending tweets for trades')
-            self.create_swaps_tweets([whales[-1]])
+            self.create_swaps_tweets(whales)
+
+            self.timestamp_last_fetch = int(time.time())
         except RequestException as e:
             logging.error(e)
 
