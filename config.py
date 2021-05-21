@@ -14,9 +14,6 @@ class BaseConfig:
     TWITTER_ACCESS_TOKEN = os.getenv('TWITTER_ACCESS_TOKEN', default='')
     TWITTER_ACCESS_SECRET = os.getenv('TWITTER_ACCESS_SECRET', default='')
 
-    SUBGRAPH_API_ENDPOINT = \
-        os.getenv('SUBGRAPH_API_ENDPOINT',
-                  default='https://api.thegraph.com/subgraphs/name/synthetixio-team/synthetix-exchanges')
     THRESHOLD = os.getenv('TRADE_VALUE_THRESHOLD', 100000)
 
 

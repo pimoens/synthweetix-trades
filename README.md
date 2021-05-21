@@ -15,9 +15,15 @@ Extra features:
 
 ### Data collection
 
+#### Trades
+
 Concerning data collection, all data is queried from TheGraph API ([Synthethix Exchanges subgraph](https://thegraph.com/explorer/subgraph/synthetixio-team/synthetix-exchanges))
 using the [gql](https://pypi.org/project/gql/). The query details can be found in the source code.
 
+#### Cross-asset Swaps on Curve
+
+For Cross-asset Swaps on Curve, the data is collected from TheGraph API ([Blocklytics Curve subgraph](https://thegraph.com/explorer/subgraph/blocklytics/curve)).
+The prices are converted to USD using [cryptocompare](https://pypi.org/project/cryptocompare/).
 
 ### Twitter bot
 
@@ -29,7 +35,8 @@ When the exchange value is larger than a set threshold (default is $100,000), a 
 
 **Preview**
 
-![preview](docs/example_trades_tweet.png)
+![trade](docs/example_trade_tweet.png)
+![cross-asset swap](docs/example_crossassetswap_tweet.png)
 
 
 ## Deployment
@@ -38,15 +45,14 @@ When the exchange value is larger than a set threshold (default is $100,000), a 
 
 #### Environment variables
 
-| Name                      | Description                                                     | Default                                                                        |
-| :-------------:           | :-------------:                                                 | :-----:                                                                        |
-| CONFIGURATION             | Configuration to run (`development`, `production` or `cronjob`) | `development`                                                                  |
-| TWITTER_CONSUMER_KEY      | Twitter Consumer Key                                            | `''`                                                                           |
-| TWITTER_CONSUMER_SECRET   | Twitter Consumer Secret                                         | `''`                                                                           |
-| TWITTER_ACCESS_TOKEN      | Twitter OAuth Access Token                                      | `''`                                                                           |
-| TWITTER_ACCESS_SECRET     | Twitter OAuth Access Secret                                     | `''`                                                                           |
-| SUBGRAPH_API_ENDPOINT     | API Endpoint of the Synthetix Exchanges subgraph                | `https://api.thegraph.com/subgraphs/name/synthetixio-team/synthetix-exchanges` |
-| THRESHOLD                 | Threshold (in USD)                                              | `100000`                                                                       |
+| Name                      | Description                                                     | Default         |
+| :-------------:           | :-------------:                                                 | :-----:         |
+| CONFIGURATION             | Configuration to run (`development`, `production` or `cronjob`) | `development`   |
+| TWITTER_CONSUMER_KEY      | Twitter Consumer Key                                            | `''`            |
+| TWITTER_CONSUMER_SECRET   | Twitter Consumer Secret                                         | `''`            |
+| TWITTER_ACCESS_TOKEN      | Twitter OAuth Access Token                                      | `''`            |
+| TWITTER_ACCESS_SECRET     | Twitter OAuth Access Secret                                     | `''`            |
+| THRESHOLD                 | Threshold (in USD)                                              | `100000`        |
 
 ### Heroku
 

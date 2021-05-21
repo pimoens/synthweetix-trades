@@ -19,8 +19,7 @@ if __name__ == '__main__':
     bot = SynthweetixBot(config.TWITTER_CONSUMER_KEY,
                          config.TWITTER_CONSUMER_SECRET,
                          config.TWITTER_ACCESS_TOKEN,
-                         config.TWITTER_ACCESS_SECRET,
-                         config.SUBGRAPH_API_ENDPOINT)
+                         config.TWITTER_ACCESS_SECRET)
 
     # Run once on startup
     bot.execute(config.THRESHOLD)
