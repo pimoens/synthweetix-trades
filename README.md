@@ -51,15 +51,17 @@ An additional threshold is introduced to optionally send an eye catcher line wit
 
 #### Environment variables
 
-| Name                      | Description                                                     | Default         |
-| :-------------:           | :-------------:                                                 | :-----:         |
-| CONFIGURATION             | Configuration to run (`development`, `production` or `cronjob`) | `development`   |
-| TWITTER_CONSUMER_KEY      | Twitter Consumer Key                                            | `''`            |
-| TWITTER_CONSUMER_SECRET   | Twitter Consumer Secret                                         | `''`            |
-| TWITTER_ACCESS_TOKEN      | Twitter OAuth Access Token                                      | `''`            |
-| TWITTER_ACCESS_SECRET     | Twitter OAuth Access Secret                                     | `''`            |
-| TRADE_VALUE_THRESHOLD     | Trade Value Threshold (in USD)                                  | `250000`        |
-| EYE_CATCHER_THRESHOLD     | Threshold (in USD) used to add additional eye catcher lines     | `1000000`       |
+| Name                           | Description                                                     | Default         |
+| :-------------:                | :-------------:                                                 | :-----:         |
+| CONFIGURATION                  | Configuration to run (`development`, `production` or `cronjob`) | `development`   |
+| TWITTER_CONSUMER_KEY           | Twitter Consumer Key                                            | `''`            |
+| TWITTER_CONSUMER_SECRET        | Twitter Consumer Secret                                         | `''`            |
+| TWITTER_ACCESS_TOKEN           | Twitter OAuth Access Token                                      | `''`            |
+| TWITTER_ACCESS_SECRET          | Twitter OAuth Access Secret                                     | `''`            |
+| ETHERSCAN_API_KEY              | EtherScan API Key (used for Cross-Asset Swap validation)        | `''`            |
+| TRADE_VALUE_THRESHOLD          | Trade Value Threshold (in USD)                                  | `250000`        |
+| SHORT_POSITION_VALUE_THRESHOLD | Threshold used for Short Positions (in USD)                     | `100000`        |
+| EYE_CATCHER_THRESHOLD          | Threshold (in USD) used to add additional eye catcher lines     | `1000000`       |
 
 ### Heroku
 

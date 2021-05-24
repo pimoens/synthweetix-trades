@@ -41,7 +41,7 @@ class ExchangeType(Enum):
 class SynthweetixBot:
 
     def __init__(self, key, secret, access_token, access_secret, etherscan_api_key,
-                 trade_value_threshold=250000, eye_catcher_threshold=1000000,
+                 trade_value_threshold=250000, short_position_value_threshold=100000, eye_catcher_threshold=1000000,
                  debug=False):
         auth = OAuthHandler(key, secret)
         auth.set_access_token(access_token, access_secret)
@@ -71,6 +71,7 @@ class SynthweetixBot:
         self.cg = CoinGeckoAPI()
 
         self.trade_value_threshold = trade_value_threshold
+        self.short_position_value_threshold = short_position_value_threshold
         self.eye_catcher_threshold = eye_catcher_threshold
 
         self.timestamp_last_fetch = int(time.time())
@@ -323,7 +324,7 @@ class SynthweetixBot:
                 collateral_locked_amount = float(short.get('collateralLockedAmount')) / 1e18
                 collateral_locked_amount_usd = collateral_locked_amount * prices.get(collateral_token)
 
-                if synth_borrowed_amount_usd >= self.trade_value_threshold:
+                if synth_borrowed_amount_usd >= self.short_position_value_threshold:
                     short['synthBorrowed'] = synth_token
                     short['synthBorrowedAmount'] = synth_borrowed_amount
                     short['synthBorrowedAmountUSD'] = synth_borrowed_amount_usd
