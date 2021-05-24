@@ -116,13 +116,21 @@ class SynthweetixBot:
         return result.get('synthExchanges')
 
     def fetch_vyper_transactions(self):
-        start_block = int(json.loads(requests.get(
-            f'https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={self.timestamp_last_fetch}&closest=after&apikey={self.etherscan_api_key}'
-        ).text)['result'])
+        txs = []
 
-        txs = json.loads(requests.get(
-            f'https://api.etherscan.io/api?module=account&action=txlist&address={ETHERSCAN_VYPER_CONTRACT}&startblock={start_block}&sort=asc&apikey={self.etherscan_api_key}'
-        ).text)['result']
+        try:
+            with requests.get(f'https://api.etherscan.io/api?module=block&action=getblocknobytime'
+                              f'&timestamp={self.timestamp_last_fetch}&closest=after&'
+                              f'apikey={self.etherscan_api_key}') as r:
+                start_block = int(json.loads(r.text)['result'])
+
+            with requests.get(f'https://api.etherscan.io/api?module=account&action=txlist&'
+                              f'address={ETHERSCAN_VYPER_CONTRACT}&startblock={start_block}&'
+                              f'sort=asc&apikey={self.etherscan_api_key}') as r:
+                txs = json.loads(r.text)['result']
+        except ValueError as e:
+            logging.warning(e)
+
         return txs
 
     def fetch_curve_swaps(self):
