@@ -20,6 +20,7 @@ if __name__ == '__main__':
                          config.TWITTER_CONSUMER_SECRET,
                          config.TWITTER_ACCESS_TOKEN,
                          config.TWITTER_ACCESS_SECRET,
+                         config.ETHERSCAN_API_KEY,
                          config.TRADE_VALUE_THRESHOLD,
                          config.EYE_CATCHER_THRESHOLD)
 
