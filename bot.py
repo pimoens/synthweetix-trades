@@ -1,3 +1,5 @@
+import json
+
 import cryptocompare
 from datetime import datetime
 from enum import Enum
@@ -6,20 +8,22 @@ from gql.transport.requests import RequestsHTTPTransport
 import logging
 from pycoingecko import CoinGeckoAPI
 from random import randint
-from requests import RequestException
+import requests
 import time
 from tweepy import API, OAuthHandler, TweepError
 
 __author__ = 'Pieter Moens'
 __email__ = "pieter@pietermoens.be"
 
-
 # Emojis: https://apps.timwhitlock.info/emoji/tables/unicode
 
-
+# TheGraph endpoints
 EXCHANGE_SUBGRAPH_API_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/synthetixio-team/synthetix-exchanges'
 CURVE_SUBGRAPH_API_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/blocklytics/curve'
 SHORTS_SUBGRAPH_API_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/synthetixio-team/synthetix-shorts'
+
+# EtherScan Vyper Contract
+ETHERSCAN_VYPER_CONTRACT = '0x58A3c68e2D3aAf316239c003779F71aCb870Ee47'
 
 EYE_CATCHERS = [
     '\U0001F6A8 Alert: A Whale has been spotted in the trading waters!',
@@ -36,11 +40,14 @@ class ExchangeType(Enum):
 
 class SynthweetixBot:
 
-    def __init__(self, key, secret, access_token, access_secret,
-                 trade_value_threshold=250000, eye_catcher_threshold=1000000, debug=False):
+    def __init__(self, key, secret, access_token, access_secret, etherscan_api_key,
+                 trade_value_threshold=250000, eye_catcher_threshold=1000000,
+                 debug=False):
         auth = OAuthHandler(key, secret)
         auth.set_access_token(access_token, access_secret)
         self.api = API(auth)
+
+        self.etherscan_api_key = etherscan_api_key
 
         # Trades
         transport = RequestsHTTPTransport(
@@ -106,6 +113,16 @@ class SynthweetixBot:
         )
         result = self.gql_client_synthetix_exchanges.execute(query)
         return result.get('synthExchanges')
+
+    def fetch_vyper_transactions(self):
+        start_block = int(json.loads(requests.get(
+            f'https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp={self.timestamp_last_fetch}&closest=after&apikey={self.etherscan_api_key}'
+        ).text)['result'])
+
+        txs = json.loads(requests.get(
+            f'https://api.etherscan.io/api?module=account&action=txlist&address={ETHERSCAN_VYPER_CONTRACT}&startblock={start_block}&sort=asc&apikey={self.etherscan_api_key}'
+        ).text)['result']
+        return txs
 
     def fetch_curve_swaps(self):
         query = gql(
@@ -231,8 +248,10 @@ class SynthweetixBot:
                 r = randint(0, 2)
                 message.append(EYE_CATCHERS[r])
             message.extend([
-                'SYNTH BORROWED {:,.2f} {} (${:,.2f})'.format(synth_borrowed_amount, synth_borrowed, synth_borrowed_amount_usd),
-                'COLLATERAL LOCKED {:,.2f} {} (${:,.2f})'.format(collateral_locked_amount, collateral_locked, collateral_locked_amount_usd),
+                'SYNTH BORROWED {:,.2f} {} (${:,.2f})'.format(synth_borrowed_amount, synth_borrowed,
+                                                              synth_borrowed_amount_usd),
+                'COLLATERAL LOCKED {:,.2f} {} (${:,.2f})'.format(collateral_locked_amount, collateral_locked,
+                                                                 collateral_locked_amount_usd),
                 'https://etherscan.io/tx/{}'.format(tx_hash),
             ])
 
@@ -258,23 +277,26 @@ class SynthweetixBot:
             swaps = self.fetch_curve_swaps()
             whales = []
 
+            txs = self.fetch_vyper_transactions()
+
             for swap in swaps:
-                from_token = swap.get('fromToken').get('symbol')
-                if from_token not in prices.keys():
-                    prices[from_token] = cryptocompare.get_price(from_token, currency='usd')\
-                        .get(from_token.upper()).get('USD')
+                if swap.get('transaction').get('hash') in txs:  # Check if swap is an actual Cross-Asset Swap
+                    from_token = swap.get('fromToken').get('symbol')
+                    if from_token not in prices.keys():
+                        prices[from_token] = cryptocompare.get_price(from_token, currency='usd') \
+                            .get(from_token.upper()).get('USD')
 
-                to_token = swap.get('toToken').get('symbol')
-                if to_token not in prices.keys():
-                    prices[to_token] = cryptocompare.get_price(to_token, currency='usd')\
-                        .get(to_token.upper()).get('USD')
+                    to_token = swap.get('toToken').get('symbol')
+                    if to_token not in prices.keys():
+                        prices[to_token] = cryptocompare.get_price(to_token, currency='usd') \
+                            .get(to_token.upper()).get('USD')
 
-                from_token_amount_usd = float(swap.get('fromTokenAmountDecimal')) * prices.get(from_token)
-                to_token_amount_usd = float(swap.get('toTokenAmountDecimal')) * prices.get(to_token)
-                if to_token_amount_usd >= self.trade_value_threshold:
-                    swap['fromTokenAmountUSD'] = from_token_amount_usd
-                    swap['toTokenAmountUSD'] = to_token_amount_usd
-                    whales.append(swap)
+                    from_token_amount_usd = float(swap.get('fromTokenAmountDecimal')) * prices.get(from_token)
+                    to_token_amount_usd = float(swap.get('toTokenAmountDecimal')) * prices.get(to_token)
+                    if to_token_amount_usd >= self.trade_value_threshold:
+                        swap['fromTokenAmountUSD'] = from_token_amount_usd
+                        swap['toTokenAmountUSD'] = to_token_amount_usd
+                        whales.append(swap)
 
             logging.info('Sending tweets for cross-asset swaps')
             self.create_swaps_tweets(whales)
@@ -287,12 +309,12 @@ class SynthweetixBot:
             for short in shorts:
                 synth_token = bytes.fromhex(short.get('synthBorrowed')[2:10]).decode('utf-8')
                 if synth_token not in prices.keys():
-                    prices[synth_token] = self.cg.get_price(ids=synth_token, vs_currencies='usd')\
+                    prices[synth_token] = self.cg.get_price(ids=synth_token, vs_currencies='usd') \
                         .get(synth_token.lower()).get('usd')
 
                 collateral_token = bytes.fromhex(short.get('collateralLocked')[2:10]).decode('utf-8')
                 if collateral_token not in prices.keys():
-                    prices[collateral_token] = cryptocompare.get_price(collateral_token, currency='usd')\
+                    prices[collateral_token] = cryptocompare.get_price(collateral_token, currency='usd') \
                         .get(collateral_token.upper()).get('USD')
 
                 synth_borrowed_amount = float(short.get('synthBorrowedAmount')) / 1e18
@@ -315,7 +337,7 @@ class SynthweetixBot:
             self.create_shorts_tweets(whales)
 
             self.timestamp_last_fetch = int(time.time())
-        except RequestException as e:
+        except requests.RequestException as e:
             logging.error(e)
 
         end = datetime.now()

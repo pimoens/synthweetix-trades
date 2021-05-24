@@ -14,6 +14,8 @@ class BaseConfig:
     TWITTER_ACCESS_TOKEN = os.getenv('TWITTER_ACCESS_TOKEN', default='')
     TWITTER_ACCESS_SECRET = os.getenv('TWITTER_ACCESS_SECRET', default='')
 
+    ETHERSCAN_API_KEY = os.getenv('ETHERSCAN_API_KEY', default='')
+
     TRADE_VALUE_THRESHOLD = int(os.getenv('TRADE_VALUE_THRESHOLD', default=250000))
     EYE_CATCHER_THRESHOLD = int(os.getenv('EYECATCHER_VALUE_THRESHOLD', default=1000000))
 
