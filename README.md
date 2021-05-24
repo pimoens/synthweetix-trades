@@ -25,6 +25,9 @@ using the [gql](https://pypi.org/project/gql/). The query details can be found i
 For Cross-asset Swaps on Curve, the data is collected from TheGraph API ([Blocklytics Curve subgraph](https://thegraph.com/explorer/subgraph/blocklytics/curve)).
 The prices are converted to USD using [cryptocompare](https://pypi.org/project/cryptocompare/).
 
+The [EtherScan API](https://etherscan.io/apis) is used to validate that the retrieved Swaps (from the subgraph) are actual Cross-Asset Swaps.
+This is done by matching the retrieved hashes to the [Vyper Contract](https://etherscan.io/address/0x58a3c68e2d3aaf316239c003779f71acb870ee47).
+
 #### Short positions
 
 For the Short positions, the data is collected from TheGraph API ([Synthethix Shorts subgraph](https://api.thegraph.com/subgraphs/name/synthetixio-team/synthetix-shorts)).
